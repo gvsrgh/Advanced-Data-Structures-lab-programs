@@ -1,5 +1,7 @@
+/*A program that demonstrates Max Heap*/
 #include <iostream>
 #include <queue>
+#include <unordered_map>
 using namespace std;
 
 struct Node {
@@ -8,7 +10,6 @@ struct Node {
   Node* right;
   Node* parent;
 };
-
 
 Node* newNode(int data) {
   Node* node = new Node;
@@ -34,8 +35,21 @@ void siftUp(Node* node) {
   }
 }
 
+void siftDown(Node* root) {
+  Node* largest = root;
+  if (root->left != NULL && root->left->data > largest->data) {
+    largest = root->left;
+  }
+  if (root->right != NULL && root->right->data > largest->data) {
+    largest = root->right;
+  }
+  if (largest != root) {
+    swap(&(root->data), &(largest->data));
+    siftDown(largest);
+  }
+}
 
-void insert(Node** root, queue<Node*>& q, int data) {
+void insert(Node** root, queue<Node*>& q, unordered_map<int, Node*>& m, int data) {
   Node* node = newNode(data);
   if (*root == NULL) {
     *root = node;
@@ -48,9 +62,35 @@ void insert(Node** root, queue<Node*>& q, int data) {
     q.pop();
   }
   q.push(node);
+  m[data] = node;
   siftUp(node);
 }
 
+void deleteNode(Node** root, queue<Node*>& q, unordered_map<int, Node*>& m, int data) {
+  if (*root == NULL) {
+    cout << "Heap is empty!" << endl;
+    return;
+  }
+  if (m.find(data) == m.end()) {
+    cout << "Element not found in the heap" << endl;
+    return;
+  }
+  Node* node = m[data];
+  Node* lastNode = q.back();
+  swap(&(node->data), &(lastNode->data));
+  m[lastNode->data] = node;
+  m.erase(data);
+  if (lastNode->parent != NULL) {
+    if (lastNode->parent->left == lastNode) {
+      lastNode->parent->left = NULL;
+    } else {
+      lastNode->parent->right = NULL;
+    }
+  }
+  delete lastNode;
+  q.pop();
+  siftDown(*root);
+}
 
 void levelOrder(Node* root) {
   if (root == NULL)
@@ -72,22 +112,29 @@ void levelOrder(Node* root) {
 int main() {
   Node* root = NULL;
   queue<Node*> q;
+  unordered_map<int, Node*> m;
   int choice, x;
+  cout << "----------Max Heap Menu----------" << endl;
+  cout << "1. Insert" << endl;
+  cout << "2. Delete Specific" << endl;
+  cout << "3. Display" << endl;
+  cout << "57. Exit" << endl;
+  cout << "------------------------" << endl;
   while (1) {
-    cout << "----------Max Heap Menu----------" << endl;
-    cout << "1. Insert" << endl;
-    cout << "2. Display" << endl;
-    cout << "57. Exit" << endl;
-    cout << "------------------------" << endl;
     cout << "Enter your choice: ";
     cin >> choice;
     switch (choice) {
     case 1:
       cout << "Enter the value: ";
       cin >> x;
-      insert(&root, q, x);
+      insert(&root, q, m, x);
       break;
     case 2:
+      cout << "Enter the value to delete: ";
+      cin >> x;
+      deleteNode(&root, q, m, x);
+      break;
+    case 3:
       levelOrder(root);
       break;
     case 57:
