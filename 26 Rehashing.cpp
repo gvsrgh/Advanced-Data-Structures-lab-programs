@@ -43,8 +43,8 @@ void Lprobing::insert1() {
     int ele;
     cin >> ele;
     nv++;
-    cout << (double)nv / u << endl;
-    if ((double)nv / u < 0.75) {
+    cout << "Load Factor: " << (double)nv / M << endl;
+    if ((double)nv / M < 0.75) {
         Lprobe(ele);
     } else {
         rehashing();
@@ -55,9 +55,10 @@ void Lprobing::insert1() {
 void Lprobing::rehashing() {
     vector<int*> old_h = h;
     M *= 2;
+    h.clear();
     h.resize(M, nullptr);
-    u *= 2;
-    nv = 0;
+    u = (double)nv / M;
+
     for (int* ele : old_h) {
         if (ele != nullptr) {
             Lprobe(*ele);
@@ -66,8 +67,9 @@ void Lprobing::rehashing() {
     }
 }
 
+
 void Lprobing::display() {
-    cout << "\tHASH TABLE\t" << endl;
+    cout << "\tHASH TABLE" << endl;
     cout << "Indices\t\tElements" << endl;
     for (int i = 0; i < M; i++) {
         cout << i << "\t\t";
