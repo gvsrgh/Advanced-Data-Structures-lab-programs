@@ -11,6 +11,5 @@ vector < int > findDuplicates(vector < int > & arr, int n) {
             duplicates.push_back(arr[i]);
         }
     }
-
     return duplicates;
 }
