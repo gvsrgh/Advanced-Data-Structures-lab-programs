@@ -1,6 +1,8 @@
-#include<iostream>
-#include<queue>
+#include <iostream>
+#include <queue>
 using namespace std;
+
+const int t = 2;
 
 struct Node {
     int *keys;
@@ -14,6 +16,73 @@ struct BTree {
     Node *root;
     int t;
 };
+
+Node* newNode(int t, bool leaf);
+BTree* newBTree(int t);
+Node* search(Node *x, int k);
+void splitChild(Node *x, int i, Node *y);
+void insertNonFull(Node *x, int k);
+void insert(BTree *T, int k);
+void removeFromLeaf(Node *x, int idx);
+void removeFromNonLeaf(Node *x, int idx);
+int getPred(Node *x, int idx);
+int getSucc(Node *x, int idx);
+void fill(Node *x, int idx);
+void borrowFromPrev(Node *x, int idx);
+void borrowFromNext(Node *x, int idx);
+void merge(Node *x, int idx);
+void deleteKey(BTree *T, int k);
+void removeFromNode(Node *x, int k);
+int findKey(Node *x, int k);
+void display(BTree *T);
+
+int main() {
+    cout << "\nOPERATIONS ON 2-3 B TREE" << endl;
+    cout << "1. Insert" << endl;
+    cout << "2. Delete" << endl;
+    cout << "3. Search" << endl;
+    cout << "4. Display (Level Order)" << endl;
+    cout << "5. Exit" << endl;
+
+    BTree *T = newBTree(2);
+
+    int choice, key;
+    do {
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch(choice) {
+            case 1:
+                cout << "Enter key to insert: ";
+                cin >> key;
+                insert(T, key);
+                break;
+            case 2:
+                cout << "Enter key to delete: ";
+                cin >> key;
+                deleteKey(T, key);
+                break;
+            case 3:
+                cout << "Enter key to search: ";
+                cin >> key;
+                if (search(T->root, key))
+                    cout << "Key found" << endl;
+                else
+                    cout << "Key not found" << endl;
+                break;
+            case 4:
+                cout << "BTree:" << endl;
+                display(T);
+                break;
+            case 5:
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
 
 Node* newNode(int t, bool leaf) {
     Node *new_node = new Node;
@@ -113,19 +182,30 @@ void removeFromLeaf(Node *x, int idx) {
     x->n--;
 }
 
+void removeFromNonLeaf(Node *x, int idx);
+int getPred(Node *x, int idx);
+int getSucc(Node *x, int idx);
+void fill(Node *x, int idx);
+void borrowFromPrev(Node *x, int idx);
+void borrowFromNext(Node *x, int idx);
+void merge(Node *x, int idx);
+void removeFromNode(Node *x, int k);
+int findKey(Node *x, int k);
+void display(BTree *T);
+
 void removeFromNonLeaf(Node *x, int idx) {
     int k = x->keys[idx];
     if (x->C[idx]->n >= t) {
         int pred = getPred(x, idx);
         x->keys[idx] = pred;
-        deleteKey(x->C[idx], pred);
+        removeFromNode(x->C[idx], pred);
     } else if (x->C[idx + 1]->n >= t) {
         int succ = getSucc(x, idx);
         x->keys[idx] = succ;
-        deleteKey(x->C[idx + 1], succ);
+        removeFromNode(x->C[idx + 1], succ);
     } else {
         merge(x, idx);
-        deleteKey(x->C[idx], k);
+        removeFromNode(x->C[idx], k);
     }
 }
 
@@ -266,7 +346,6 @@ int findKey(Node *x, int k) {
     return idx;
 }
 
-
 void display(BTree *T) {
     if (T == NULL || T->root == NULL) {
         cout << "Empty BTree" << endl;
@@ -289,56 +368,11 @@ void display(BTree *T) {
                         q.push(curr->C[j]);
                 }
             }
-            cout << "| ";
+            if (i < n - 1) {
+                cout << "| ";
+            }
         }
         cout << endl;
     }
 }
 
-int main() {
-    cout << "\nOPERATIONS ON 2-3 B TREE" << endl;
-    cout << "1. Insert" << endl;
-    cout << "2. Delete" << endl;
-    cout << "3. Search" << endl;
-    cout << "4. Display (Level Order)" << endl;
-    cout << "5. Exit" << endl;
-
-    BTree *T = newBTree(2);
-
-    int choice, key;
-    do {
-        cout << "Enter your choice: ";
-        cin >> choice;
-        switch(choice) {
-            case 1:
-                cout << "Enter key to insert: ";
-                cin >> key;
-                insert(T, key);
-                break;
-            case 2:
-                cout << "Enter key to delete: ";
-                cin >> key;
-                deleteKey(T, key);
-                break;
-            case 3:
-                cout << "Enter key to search: ";
-                cin >> key;
-                if (search(T->root, key))
-                    cout << "Key found" << endl;
-                else
-                    cout << "Key not found" << endl;
-                break;
-            case 4:
-                cout << "BTree:" << endl;
-                display(T);
-                break;
-            case 5:
-                cout << "Exiting..." << endl;
-                break;
-            default:
-                cout << "Invalid choice. Please try again." << endl;
-        }
-    } while (choice != 5);
-
-    return 0;
-}
