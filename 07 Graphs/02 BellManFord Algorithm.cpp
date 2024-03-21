@@ -1,5 +1,7 @@
-#include <stdio.h>
-#include <limits.h>
+#include <iostream>
+#include <climits>
+
+using namespace std;
 
 // Structure to represent a weighted edge
 struct Edge {
@@ -8,13 +10,13 @@ struct Edge {
 
 // Function to print the constructed distance array
 void printSolution(int dist[], int V) {
-    printf("Vertex \t Distance from Source\n");
+    cout << "Vertex \t Distance from Source\n";
     for (int i = 0; i < V; i++)
-        printf("%d \t %d\n", i, dist[i]);
+        cout << i << " \t " << dist[i] << endl;
 }
 
 // Bellman-Ford algorithm implementation
-void BellmanFord(struct Edge edge[], int V, int E, int src) {
+void BellmanFord(Edge edge[], int V, int E, int src) {
     int dist[V]; // Output array to hold the shortest distance from src to i
 
     // Initialize distances from src to all other vertices as INFINITE
@@ -44,7 +46,7 @@ void BellmanFord(struct Edge edge[], int V, int E, int src) {
 
         // If a shorter path is found, graph contains negative-weight cycle
         if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
-            printf("Graph contains negative-weight cycle\n");
+            cout << "Graph contains negative-weight cycle\n";
             return;
         }
     }
@@ -55,18 +57,18 @@ void BellmanFord(struct Edge edge[], int V, int E, int src) {
 
 int main() {
     int V, E;
-    printf("Enter the number of vertices and edges: ");
-    scanf("%d%d", &V, &E);
+    cout << "Enter the number of vertices and edges: ";
+    cin >> V >> E;
 
-    struct Edge edge[E]; // Array to store edges
+    Edge edge[E]; // Array to store edges
 
-    printf("Enter the source, destination, and weight of each edge:\n");
+    cout << "Enter the source, destination, and weight of each edge:\n";
     for (int i = 0; i < E; i++)
-        scanf("%d%d%d", &edge[i].src, &edge[i].dest, &edge[i].weight);
+        cin >> edge[i].src >> edge[i].dest >> edge[i].weight;
 
     int src;
-    printf("Enter the source vertex: ");
-    scanf("%d", &src);
+    cout << "Enter the source vertex: ";
+    cin >> src;
 
     // Call Bellman-Ford algorithm
     BellmanFord(edge, V, E, src);
@@ -74,6 +76,7 @@ int main() {
 }
 
 /*
+6 9
 0 1 6
 0 3 5
 0 2 4
