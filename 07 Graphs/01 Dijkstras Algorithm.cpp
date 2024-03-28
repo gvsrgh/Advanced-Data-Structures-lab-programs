@@ -96,4 +96,39 @@ int main() {
 3 6 14
 3 7 9
 6 7 10
+Initialization:
+dist[0] = 0, dist[1] = INT_MAX, dist[2] = INT_MAX
+visited[0] = false, visited[1] = false, visited[2] = false
+
+Iteration 1:
+i = 0, min = INT_MAX
+1) 0 < 2 (T)
+V = 0
+1.1) (!visited[0] && dist[0] <= min) (T)
+min = 0, min_index = 0
+u = 0, visited[0] = true
+Update dist value of the adjacent vertices of the picked vertex.
+dist[1] = min(dist[1], dist[0] + weight[0][1]) = min(INT_MAX, 0 + 10) = 10
+dist[2] = min(dist[2], dist[0] + weight[0][2]) = min(INT_MAX, 0 + 4) = 4
+
+Iteration 2:
+i = 1, min = INT_MAX
+2) 1 < 2 (T)
+V = 1
+2.1) (!visited[2] && dist[2] <= min) (T)
+min = 4, min_index = 2
+u = 2, visited[2] = true
+Update dist value of the adjacent vertices of the picked vertex.
+dist[1] = min(dist[1], dist[2] + weight[2][1]) = min(10, 4 + 1) = 5
+
+Iteration 3:
+i = 2, min = INT_MAX
+3) 2 < 2 (F)
+End of iterations.
+
+Final distances:
+dist[0] = 0
+dist[1] = 5
+dist[2] = 4
+
 */
