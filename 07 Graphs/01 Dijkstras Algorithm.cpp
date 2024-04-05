@@ -1,5 +1,6 @@
 #include <iostream>
 #include <climits>
+#include <vector>
 
 using namespace std;
 
@@ -14,17 +15,29 @@ int minDistance(int dist[], bool visited[], int V) {
     return min_index;
 }
 
-// Function to print the constructed distance array
-void printSolution(int dist[], int V) {
-    cout << "Vertex \t Distance from Source" << endl;
-    for (int i = 0; i < V; i++)
-        cout << i << "\t" << dist[i] << endl;
+// Function to print the constructed distance array and paths
+void printSolution(int dist[], vector<int> parent, int V, int src) {
+    cout << "Vertex\tDistance\tPath" << endl;
+    for (int i = 0; i < V; i++) {
+        cout << src << " -> " << i << "\t" << dist[i] << "\t\t";
+        vector<int> path;
+        int j = i;
+        while (j != -1) {
+            path.push_back(j);
+            j = parent[j];
+        }
+        for (int k = path.size() - 1; k > 0; k--)
+            cout << path[k] << " -> ";
+        cout << path[0]; // Print the source vertex without an arrow
+        cout << endl;
+    }
 }
 
 // Dijkstra's algorithm implementation for directed graphs
 void dijkstra(int graph[][100], int src, int V) {
     int dist[V];     // Output array to hold the shortest distance from src to i
     bool visited[V];  // Array to keep track of visited vertices
+    vector<int> parent(V, -1); // Parent array to store the shortest path
 
     // Initialize all distances as INFINITE and visited[] as false
     for (int i = 0; i < V; i++)
@@ -42,32 +55,32 @@ void dijkstra(int graph[][100], int src, int V) {
         visited[u] = true;
 
         // Update dist value of the adjacent vertices of the picked vertex.
-        for (int v = 0; v < V; v++)
+        for (int v = 0; v < V; v++) {
             // Update dist[v] only if it's not visited, there's an edge from u to v,
             // and the total weight of path from src to v through u is smaller than current value of dist[v]
-            if (!visited[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v])
+            if (!visited[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v]) {
                 dist[v] = dist[u] + graph[u][v];
+                parent[v] = u;
+            }
+        }
     }
 
-    // Print the constructed distance array
-    printSolution(dist, V);
+    // Print the constructed distance array and paths
+    printSolution(dist, parent, V, src);
 }
 
 int main() {
-    int V, E;
+    int V;
     cout << "Enter the number of vertices: ";
     cin >> V;
 
-    cout << "Enter the number of directed edges: ";
-    cin >> E;
+    int graph[100][100]; // Assuming a maximum of 100 vertices
 
-    int graph[100][100] = {0}; // Assuming a maximum of 100 vertices
-
-    cout << "Enter the directed edges (source, destination, weight):" << endl;
-    for (int i = 0; i < E; i++) {
-        int src, dest, weight;
-        cin >> src >> dest >> weight;
-        graph[src][dest] = weight; // Assigning weight to directed edges
+    cout << "Enter the adjacency matrix:" << endl;
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            cin >> graph[i][j];
+        }
     }
 
     int src;
@@ -81,19 +94,13 @@ int main() {
 
 /*
 9
-14
-0 1 4
-0 4 8
-1 2 8
-1 4 11
-4 8 7
-4 5 1
-2 8 2
-5 8 6
-5 6 2
-2 6 4
-2 3 7
-3 6 14
-3 7 9
-6 7 10
+0 4 0 0 8 0 0 0 0
+4 0 8 0 11 0 0 0 0
+0 8 0 7 0 0 4 0 2
+0 0 7 0 0 0 14 9 0
+8 11 0 0 0 1 0 0 7
+0 0 0 0 1 0 2 0 6
+0 0 4 14 0 2 0 10 0
+0 0 0 9 0 0 10 0 0
+0 0 2 0 7 5 0 0 0
 */
