@@ -29,47 +29,53 @@ int getPrime(int n)
     return i;
 }
 
-int linearProbing(int key,int tSize, int index)
-{
-    while(index<tSize && (ht.find(index)!=ht.end()))
+int linearProbing(int key, int tSize, int index) {
+    while (index < tSize && (ht.find(index) != ht.end())) {
         index++;
-    return index;
-}
-
-int quadraticProbing(int key,int tSize,int index)
-{
-    int i = 1;
-    while(index<tSize && (ht.find(index)!=ht.end()))
-        index = (index+i*i)%tSize,i++;
-    return index;
-}
-
-int calculateStepSize(int key,int s)
-{
-    int stepSize = 0;
-    int ti = s-1;
-    for(int i = ti;i>=0;i--)
-        if (isPrime(i))
-        {
-            ti = i;
-            break;
-        }
-    while(stepSize==0)
-        stepSize = ti-key%ti;
-    return stepSize;
-}
-
-int doubleHashing(int key,int tSize,int index)
-{
-    int stepSize = calculateStepSize(key,tSize);
-    int i = 1;
-    while(index<tSize && (ht.find(index)!=ht.end()))
-    {
-        index = (index+i*stepSize)%tSize;
-        i++;
+        if (index == tSize)  // Wrap around to the beginning
+            index = 0;
     }
     return index;
 }
+
+
+int quadraticProbing(int key, int tSize, int index) {
+    int i = 1;
+    while (index < tSize && (ht.find(index) != ht.end())) {
+        index = (index + i * i) % tSize;
+        i++;
+        if (index == tSize)  // Wrap around to the beginning
+            index = 0;
+    }
+    return index;
+}
+
+
+int calculateStepSize(int key, int s) {
+    int stepSize = 0;
+    int ti = s - 1;
+    for (int i = ti; i >= 0; i--) {
+        if (isPrime(i) && key % i != 0) {
+            stepSize = i;
+            break;
+        }
+    }
+    return stepSize;
+}
+
+
+int doubleHashing(int key, int tSize, int index) {
+    int stepSize = calculateStepSize(key, tSize);
+    int i = 1;
+    while (index < tSize && (ht.find(index) != ht.end())) {
+        index = (index + i * stepSize) % tSize;
+        i++;
+        if (index == tSize)  // Wrap around to the beginning
+            index = 0;
+    }
+    return index;
+}
+
 
 
 int chainingT(int key, int tSize, int index)
@@ -83,40 +89,39 @@ int calculateIndex(int t,int n)
     return index;
 }
 
-void insertion(int n)
-{
-    int key;
-    cout<<"Enter the value to be inserted: ";
-    cin>>key;
-    int index = calculateIndex(key,n);
-    if(ht.find(index)!=ht.end())
-    {
-        switch(cr)
-        {
-            case 1:
-                index = linearProbing(key,n,index);
-                break;
-            case 2:
-                index = quadraticProbing(key,n,index);
-                break;
-            case 3:
-                index = doubleHashing(key,n,index);
-                break;
-            case 4:
-                index = chainingT(key,n,index);
-                break;
-            default:
-                cout<<"Invalid Collision Choice"<<endl;
-        }
-    }
-    if(ht.find(index)!=ht.end() && cr!=4)
-    {
-        cout<<"Hash Table is Full!!"<<endl;
+void insertion(int n) {
+    if (ht.size() == n) {
+        cout << "Hash Table is Full!!" << endl;
         return;
     }
+
+    int key;
+    cout << "Enter the value to be inserted: ";
+    cin >> key;
+    int index = calculateIndex(key, n);
+
+    switch (cr) {
+        case 1:
+            index = linearProbing(key, n, index);
+            break;
+        case 2:
+            index = quadraticProbing(key, n, index);
+            break;
+        case 3:
+            index = doubleHashing(key, n, index);
+            break;
+        case 4:
+            index = chainingT(key, n, index);
+            break;
+        default:
+            cout << "Invalid Collision Choice" << endl;
+            return;
+    }
+
     ht[index].push_back(key);
-    cout<<"Insertion Successful!!"<<endl;
+    cout << "Insertion Successful!!" << endl;
 }
+
 
 void display(int n)
 {
